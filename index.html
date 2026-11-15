@@ -1,99 +1,229 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SIDADI E-VOTING</title>
+<title>SIDADI E-VOTING - Admin</title>
 <style>
+:root{--navy:#092b60;--blue:#17477e;--gold:#f5c75b;--bg:#f1f5fa;--white:#fff}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#17243b}
-header{background:#092b60;color:white;padding:22px;text-align:center}
-header h1{margin:0;color:#f5c75b;font-size:27px}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#202c40}
+header{background:var(--navy);color:white;padding:22px 16px}
+header h1{margin:0;color:var(--gold);font-size:25px}
 header p{margin:8px 0 0;font-size:13px}
-nav{display:flex;justify-content:center;gap:10px;padding:14px;background:white;flex-wrap:wrap}
-button{border:0;border-radius:8px;padding:12px 18px;background:#123d79;color:white;font-weight:bold;cursor:pointer}
-button:hover{opacity:.85}
-main{max-width:950px;margin:24px auto;padding:0 15px}
-.hero,.panel{background:white;border-radius:15px;padding:22px;margin-bottom:18px;box-shadow:0 3px 14px #14284b12}
-.hero{text-align:center;border-top:5px solid #e6b84d}
-h2{color:#123d79}
-.tag{display:inline-block;background:#fff0d1;color:#8a5700;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:bold}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.candidate{border:1px solid #dce3ed;border-radius:12px;padding:18px;text-align:center}
-.avatar{width:75px;height:75px;border-radius:50%;background:#e8effa;display:grid;place-items:center;margin:auto;font-size:30px}
-.candidate h3{margin-bottom:5px}
-.small{font-size:13px;color:#68758a}
-.result{background:#eaf1fb;border-radius:8px;padding:12px;margin:12px 0}
-footer{text-align:center;color:#718096;padding:25px;font-size:12px}
-.hidden{display:none}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.menu{display:flex;gap:8px;overflow-x:auto;padding:12px;background:white;position:sticky;top:0;z-index:5}
+button{border:0;border-radius:9px;padding:11px 15px;background:var(--blue);color:white;font-weight:bold;cursor:pointer}
+.menu button{white-space:nowrap}
+button.active{background:var(--gold);color:#172c48}
+main{max-width:1100px;margin:auto;padding:16px}
+.page{display:none}
+.page.active{display:block}
+.card{background:white;padding:19px;border-radius:15px;margin-bottom:15px;box-shadow:0 3px 14px #102b5010}
+h2{color:var(--navy);margin-top:0}
+h3{color:var(--navy)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{background:white;padding:18px;border-radius:13px;border-left:5px solid var(--gold)}
+.stat strong{display:block;font-size:27px;color:var(--navy);margin-top:8px}
+input,select,textarea{width:100%;padding:12px;margin:7px 0 13px;border:1px solid #ccd5e2;border-radius:8px;font-size:15px;background:white}
+label{font-weight:bold;font-size:14px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #e5eaf1;font-size:13px}
+th{background:#edf3fa;color:var(--navy)}
+.tablewrap{overflow-x:auto}
+.delete{background:#b83232;padding:7px 10px}
+.primary{background:var(--navy)}
+.gold{background:var(--gold);color:#172c48}
+.notice{background:#fff5d9;padding:13px;border-radius:10px;font-size:13px;line-height:1.6}
+.small{font-size:12px;color:#718096}
+footer{text-align:center;padding:25px;color:#68778b;font-size:12px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:500px){.formgrid{grid-template-columns:1fr}header h1{font-size:21px}}
 </style>
 </head>
 <body>
 <header>
+<div class="top">
+<div>
 <h1>SIDADI E-VOTING</h1>
 <p>SISTEM INFORMASI DESA DIGITAL</p>
-<p>Platform Simulasi Pilkades & Pilwana</p>
+</div>
+<div style="text-align:right;font-size:12px">ADMIN<br>VERSI 1.0</div>
+</div>
 </header>
-<nav>
-<button onclick="show('home')">Beranda</button>
-<button onclick="show('candidates')">Data Calon</button>
-<button onclick="show('vote')">Simulasi Memilih</button>
-<button onclick="show('admin')">Dashboard Admin</button>
+
+<nav class="menu">
+<button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+<button onclick="showPage('wilayah',this)">Wilayah</button>
+<button onclick="showPage('pemilih',this)">Pemilih</button>
+<button onclick="showPage('calon',this)">Data Calon</button>
+<button onclick="showPage('tps',this)">Data TPS</button>
+<button onclick="showPage('jadwal',this)">Jadwal</button>
+<button onclick="showPage('laporan',this)">Laporan</button>
 </nav>
+
 <main>
-<section id="home">
-<div class="hero">
-<span class="tag">PROTOTIPE VERSI 1.0</span>
-<h2>Selamat Datang di SIDADI E-VOTING</h2>
-<p>Sistem pemilihan elektronik untuk mendukung tata kelola pemerintahan desa dan nagari.</p>
-<h3>Digitalisasi Pemilihan, Transparansi Tata Kelola</h3>
-<button onclick="show('candidates')">Lihat Calon</button>
+<section id="dashboard" class="page active">
+<div class="card">
+<h2>Dashboard Admin</h2>
+<p>Selamat datang di pusat pengelolaan SIDADI E-VOTING.</p>
+<div class="notice">MODE DEMONSTRASI. Dashboard ini belum digunakan untuk pemungutan suara resmi.</div>
 </div>
-<div class="cards">
-<div class="panel"><h3>📋 Data Calon</h3><p>Informasi calon peserta pemilihan.</p></div>
-<div class="panel"><h3>🗳️ Pemungutan Suara</h3><p>Simulasi proses pemilihan elektronik.</p></div>
-<div class="panel"><h3>📊 Dashboard</h3><p>Contoh tampilan administrasi dan hasil.</p></div>
+<div class="stats">
+<div class="stat">Data Wilayah<strong id="sw">0</strong></div>
+<div class="stat">Data Pemilih<strong id="sp">0</strong></div>
+<div class="stat">Data Calon<strong id="sc">0</strong></div>
+<div class="stat">Jumlah TPS<strong id="st">0</strong></div>
 </div>
-</section>
-<section id="candidates" class="hidden">
-<div class="panel"><h2>Daftar Calon</h2><p class="small">Data berikut hanya contoh fiktif.</p>
-<div class="cards">
-<div class="candidate"><div class="avatar">👤</div><h3>Calon Nomor 1</h3><p class="small">Nama: Kandidat Simulasi A</p><span class="tag">Nomor Urut 1</span></div>
-<div class="candidate"><div class="avatar">👤</div><h3>Calon Nomor 2</h3><p class="small">Nama: Kandidat Simulasi B</p><span class="tag">Nomor Urut 2</span></div>
-<div class="candidate"><div class="avatar">👤</div><h3>Calon Nomor 3</h3><p class="small">Nama: Kandidat Simulasi C</p><span class="tag">Nomor Urut 3</span></div>
-</div></div>
-</section>
-<section id="vote" class="hidden">
-<div class="panel"><h2>Simulasi Pemungutan Suara</h2>
-<p class="small">SIMULASI SAJA — bukan pemungutan suara resmi. Jangan masukkan NIK atau data pribadi.</p>
-<div class="result">Pilih satu calon contoh untuk mencoba tampilan.</div>
-<div class="cards">
-<button onclick="choose(1)">Pilih Calon 1</button>
-<button onclick="choose(2)">Pilih Calon 2</button>
-<button onclick="choose(3)">Pilih Calon 3</button>
-</div>
-<p id="choice">Belum ada pilihan.</p>
+<div class="card">
+<h3>Informasi Sistem</h3>
+<p>Nama: SIDADI E-VOTING</p>
+<p>Pengembang: PT Sistem Informasi Desa Digital</p>
+<p>Cakupan: Pilkades dan Pilwana Indonesia</p>
+<p>Status: Pengembangan tahap awal</p>
 </div>
 </section>
-<section id="admin" class="hidden">
-<div class="panel"><h2>Dashboard Administrator</h2>
-<span class="tag">MODE DEMO</span>
-<div class="result">Wilayah: Contoh Nagari</div>
-<div class="result">Jumlah calon: 3 (data contoh)</div>
-<div class="result">Status: Prototipe belum terhubung ke server</div>
-<p class="small">Pengelolaan DPT, TPS, pengguna, dan rekapitulasi akan dibangun pada tahap berikutnya.</p>
+
+<section id="wilayah" class="page">
+<div class="card">
+<h2>Manajemen Wilayah</h2>
+<label>Provinsi</label><input id="prov" placeholder="Contoh: Sumatera Barat">
+<label>Kabupaten/Kota</label><input id="kab" placeholder="Contoh: Kabupaten Solok">
+<label>Kecamatan</label><input id="kec" placeholder="Nama kecamatan">
+<label>Desa/Nagari</label><input id="desa" placeholder="Nama desa atau nagari">
+<button onclick="addWilayah()">Simpan Wilayah</button>
+</div>
+<div class="card">
+<h3>Daftar Wilayah</h3>
+<div class="tablewrap"><table><thead><tr><th>Provinsi</th><th>Kabupaten</th><th>Kecamatan</th><th>Desa/Nagari</th><th>Aksi</th></tr></thead><tbody id="tw"></tbody></table></div>
+</div>
+</section>
+
+<section id="pemilih" class="page">
+<div class="card">
+<h2>Manajemen Pemilih</h2>
+<div class="notice">Gunakan nama contoh saja. Jangan masukkan NIK, alamat pribadi, atau data pemilih sungguhan ke versi demonstrasi ini.</div>
+<label>Nama Pemilih Contoh</label><input id="pnama" placeholder="Nama pemilih">
+<label>Wilayah</label><input id="pdesa" placeholder="Desa/Nagari">
+<label>Status Simulasi</label>
+<select id="pstatus"><option>Belum diverifikasi</option><option>Contoh terverifikasi</option></select>
+<button onclick="addPemilih()">Tambah Pemilih Contoh</button>
+</div>
+<div class="card">
+<h3>Daftar Pemilih Contoh</h3>
+<div class="tablewrap"><table><thead><tr><th>Nama</th><th>Wilayah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tp"></tbody></table></div>
+</div>
+</section>
+
+<section id="calon" class="page">
+<div class="card">
+<h2>Manajemen Data Calon</h2>
+<label>Nama Calon</label><input id="cnama" placeholder="Nama calon">
+<label>Nomor Urut</label><input id="cno" type="number" min="1" placeholder="Nomor urut">
+<label>Wilayah Pemilihan</label><input id="cdesa" placeholder="Desa/Nagari">
+<label>Jenis Pemilihan</label>
+<select id="cjenis"><option>Pilkades</option><option>Pilwana</option></select>
+<button onclick="addCalon()">Tambah Calon</button>
+</div>
+<div class="card">
+<h3>Daftar Calon</h3>
+<div class="tablewrap"><table><thead><tr><th>Nomor</th><th>Nama</th><th>Wilayah</th><th>Jenis</th><th>Aksi</th></tr></thead><tbody id="tc"></tbody></table></div>
+</div>
+</section>
+
+<section id="tps" class="page">
+<div class="card">
+<h2>Manajemen TPS</h2>
+<label>Nomor TPS</label><input id="tnomor" placeholder="Contoh: TPS 01">
+<label>Nama Wilayah</label><input id="twilayah" placeholder="Desa/Nagari">
+<label>Lokasi TPS</label><input id="tlokasi" placeholder="Lokasi simulasi">
+<button onclick="addTPS()">Tambah TPS</button>
+</div>
+<div class="card">
+<h3>Daftar TPS</h3>
+<div class="tablewrap"><table><thead><tr><th>Nomor</th><th>Wilayah</th><th>Lokasi</th><th>Aksi</th></tr></thead><tbody id="tt"></tbody></table></div>
+</div>
+</section>
+
+<section id="jadwal" class="page">
+<div class="card">
+<h2>Jadwal Pemilihan</h2>
+<label>Nama Kegiatan</label><input id="jnama" placeholder="Contoh: Simulasi Pilwana">
+<label>Tanggal</label><input id="jtanggal" type="date">
+<label>Waktu Mulai</label><input id="jmulai" type="time">
+<label>Waktu Selesai</label><input id="jselesai" type="time">
+<button onclick="addJadwal()">Simpan Jadwal</button>
+</div>
+<div class="card">
+<h3>Daftar Jadwal</h3>
+<div class="tablewrap"><table><thead><tr><th>Kegiatan</th><th>Tanggal</th><th>Mulai</th><th>Selesai</th><th>Aksi</th></tr></thead><tbody id="tj"></tbody></table></div>
+</div>
+</section>
+
+<section id="laporan" class="page">
+<div class="card">
+<h2>Laporan Data</h2>
+<p>Ringkasan data demonstrasi yang tersimpan di browser ini.</p>
+<div id="ringkasan"></div>
+<button onclick="downloadReport()" class="gold">Unduh Laporan CSV</button>
+</div>
+<div class="card">
+<h3>Hasil Pemungutan Suara</h3>
+<div class="notice">Belum tersedia. Penghitungan suara nyata tidak dilakukan pada versi demonstrasi ini. Modul hasil resmi memerlukan backend dan audit keamanan.</div>
 </div>
 </section>
 </main>
-<footer>© 2026 PT SISTEM INFORMASI DESA DIGITAL (SIDADI)<br>SIDADI E-VOTING — PROTOTIPE SIMULASI</footer>
+
+<footer>
+<strong>SIDADI E-VOTING</strong><br>
+PT SISTEM INFORMASI DESA DIGITAL<br>
+© 2026 - Sistem Informasi Desa Digital
+</footer>
+
 <script>
-function show(id){
-['home','candidates','vote','admin'].forEach(x=>document.getElementById(x).classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
+const keys=['wilayah','pemilih','calon','tps','jadwal'];
+const db={};
+keys.forEach(k=>{try{db[k]=JSON.parse(localStorage.getItem('sidadi_'+k)||'[]')}catch(e){db[k]=[]}});
+function save(k){localStorage.setItem('sidadi_'+k,JSON.stringify(db[k]));render()}
+function showPage(id,btn){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');render();
 }
-function choose(n){
-document.getElementById('choice').textContent='Anda mencoba memilih Calon Nomor '+n+'. Ini hanya simulasi dan tidak menyimpan suara.';
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function add(k,obj){
+if(Object.values(obj).some(v=>!String(v).trim())){alert('Lengkapi semua data terlebih dahulu.');return}
+db[k].push(obj);save(k);
 }
+function del(k,i){if(confirm('Hapus data demonstrasi ini?')){db[k].splice(i,1);save(k)}}
+function addWilayah(){add('wilayah',{prov:prov.value,kab:kab.value,kec:kec.value,desa:desa.value})}
+function addPemilih(){add('pemilih',{nama:pnama.value,desa:pdesa.value,status:pstatus.value})}
+function addCalon(){add('calon',{no:cno.value,nama:cnama.value,desa:cdesa.value,jenis:cjenis.value})}
+function addTPS(){add('tps',{nomor:tnomor.value,wilayah:twilayah.value,lokasi:tlokasi.value})}
+function addJadwal(){add('jadwal',{nama:jnama.value,tanggal:jtanggal.value,mulai:jmulai.value,selesai:jselesai.value})}
+function rows(k,fields,id){
+document.getElementById(id).innerHTML=db[k].map((o,i)=>'<tr>'+fields.map(f=>'<td>'+esc(o[f])+'</td>').join('')+'<td><button class="delete" onclick="del(\''+k+'\','+i+')">Hapus</button></td></tr>').join('');
+}
+function render(){
+sw.textContent=db.wilayah.length;sp.textContent=db.pemilih.length;
+sc.textContent=db.calon.length;st.textContent=db.tps.length;
+rows('wilayah',['prov','kab','kec','desa'],'tw');
+rows('pemilih',['nama','desa','status'],'tp');
+rows('calon',['no','nama','desa','jenis'],'tc');
+rows('tps',['nomor','wilayah','lokasi'],'tt');
+rows('jadwal',['nama','tanggal','mulai','selesai'],'tj');
+ringkasan.innerHTML=keys.map(k=>'<p>'+k.toUpperCase()+': <b>'+db[k].length+'</b></p>').join('');
+}
+function downloadReport(){
+let lines=['Kategori,Data'];
+keys.forEach(k=>db[k].forEach(o=>lines.push(k+',"'+Object.values(o).join(' - ').replace(/"/g,'""')+'"')));
+let blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='laporan-sidadi-demo.csv';a.click();URL.revokeObjectURL(a.href);
+}
+render();
 </script>
 </body>
 </html>
