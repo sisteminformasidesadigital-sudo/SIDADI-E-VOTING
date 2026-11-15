@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIDADI E-VOTING</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#17243b}
+header{background:#092b60;color:white;padding:22px;text-align:center}
+header h1{margin:0;color:#f5c75b;font-size:27px}
+header p{margin:8px 0 0;font-size:13px}
+nav{display:flex;justify-content:center;gap:10px;padding:14px;background:white;flex-wrap:wrap}
+button{border:0;border-radius:8px;padding:12px 18px;background:#123d79;color:white;font-weight:bold;cursor:pointer}
+button:hover{opacity:.85}
+main{max-width:950px;margin:24px auto;padding:0 15px}
+.hero,.panel{background:white;border-radius:15px;padding:22px;margin-bottom:18px;box-shadow:0 3px 14px #14284b12}
+.hero{text-align:center;border-top:5px solid #e6b84d}
+h2{color:#123d79}
+.tag{display:inline-block;background:#fff0d1;color:#8a5700;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:bold}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.candidate{border:1px solid #dce3ed;border-radius:12px;padding:18px;text-align:center}
+.avatar{width:75px;height:75px;border-radius:50%;background:#e8effa;display:grid;place-items:center;margin:auto;font-size:30px}
+.candidate h3{margin-bottom:5px}
+.small{font-size:13px;color:#68758a}
+.result{background:#eaf1fb;border-radius:8px;padding:12px;margin:12px 0}
+footer{text-align:center;color:#718096;padding:25px;font-size:12px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>SIDADI E-VOTING</h1>
+<p>SISTEM INFORMASI DESA DIGITAL</p>
+<p>Platform Simulasi Pilkades & Pilwana</p>
+</header>
+<nav>
+<button onclick="show('home')">Beranda</button>
+<button onclick="show('candidates')">Data Calon</button>
+<button onclick="show('vote')">Simulasi Memilih</button>
+<button onclick="show('admin')">Dashboard Admin</button>
+</nav>
+<main>
+<section id="home">
+<div class="hero">
+<span class="tag">PROTOTIPE VERSI 1.0</span>
+<h2>Selamat Datang di SIDADI E-VOTING</h2>
+<p>Sistem pemilihan elektronik untuk mendukung tata kelola pemerintahan desa dan nagari.</p>
+<h3>Digitalisasi Pemilihan, Transparansi Tata Kelola</h3>
+<button onclick="show('candidates')">Lihat Calon</button>
+</div>
+<div class="cards">
+<div class="panel"><h3>📋 Data Calon</h3><p>Informasi calon peserta pemilihan.</p></div>
+<div class="panel"><h3>🗳️ Pemungutan Suara</h3><p>Simulasi proses pemilihan elektronik.</p></div>
+<div class="panel"><h3>📊 Dashboard</h3><p>Contoh tampilan administrasi dan hasil.</p></div>
+</div>
+</section>
+<section id="candidates" class="hidden">
+<div class="panel"><h2>Daftar Calon</h2><p class="small">Data berikut hanya contoh fiktif.</p>
+<div class="cards">
+<div class="candidate"><div class="avatar">👤</div><h3>Calon Nomor 1</h3><p class="small">Nama: Kandidat Simulasi A</p><span class="tag">Nomor Urut 1</span></div>
+<div class="candidate"><div class="avatar">👤</div><h3>Calon Nomor 2</h3><p class="small">Nama: Kandidat Simulasi B</p><span class="tag">Nomor Urut 2</span></div>
+<div class="candidate"><div class="avatar">👤</div><h3>Calon Nomor 3</h3><p class="small">Nama: Kandidat Simulasi C</p><span class="tag">Nomor Urut 3</span></div>
+</div></div>
+</section>
+<section id="vote" class="hidden">
+<div class="panel"><h2>Simulasi Pemungutan Suara</h2>
+<p class="small">SIMULASI SAJA — bukan pemungutan suara resmi. Jangan masukkan NIK atau data pribadi.</p>
+<div class="result">Pilih satu calon contoh untuk mencoba tampilan.</div>
+<div class="cards">
+<button onclick="choose(1)">Pilih Calon 1</button>
+<button onclick="choose(2)">Pilih Calon 2</button>
+<button onclick="choose(3)">Pilih Calon 3</button>
+</div>
+<p id="choice">Belum ada pilihan.</p>
+</div>
+</section>
+<section id="admin" class="hidden">
+<div class="panel"><h2>Dashboard Administrator</h2>
+<span class="tag">MODE DEMO</span>
+<div class="result">Wilayah: Contoh Nagari</div>
+<div class="result">Jumlah calon: 3 (data contoh)</div>
+<div class="result">Status: Prototipe belum terhubung ke server</div>
+<p class="small">Pengelolaan DPT, TPS, pengguna, dan rekapitulasi akan dibangun pada tahap berikutnya.</p>
+</div>
+</section>
+</main>
+<footer>© 2026 PT SISTEM INFORMASI DESA DIGITAL (SIDADI)<br>SIDADI E-VOTING — PROTOTIPE SIMULASI</footer>
+<script>
+function show(id){
+['home','candidates','vote','admin'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+}
+function choose(n){
+document.getElementById('choice').textContent='Anda mencoba memilih Calon Nomor '+n+'. Ini hanya simulasi dan tidak menyimpan suara.';
+}
+</script>
+</body>
+</html>
