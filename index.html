@@ -42,6 +42,8 @@ footer{text-align:center;padding:25px;color:#68778b;font-size:12px}
 @media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:500px){.formgrid{grid-template-columns:1fr}header h1{font-size:21px}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 </head>
 <body>
 <header>
@@ -62,7 +64,10 @@ footer{text-align:center;padding:25px;color:#68778b;font-size:12px}
 <button onclick="showPage('tps',this)">Data TPS</button>
 <button onclick="showPage('jadwal',this)">Jadwal</button>
 <button onclick="showPage('laporan',this)">Laporan</button>
+
+<button onclick="showPage('import',this)">IMPORT EXCEL</button>
 </nav>
+
 
 <main>
 <section id="dashboard" class="page active">
@@ -174,6 +179,70 @@ footer{text-align:center;padding:25px;color:#68778b;font-size:12px}
 <div class="notice">Belum tersedia. Penghitungan suara nyata tidak dilakukan pada versi demonstrasi ini. Modul hasil resmi memerlukan backend dan audit keamanan.</div>
 </div>
 </section>
+
+<section id="import" class="page">
+  <div class="card">
+    <h2>Import Data Pemilih Excel</h2>
+    <div class="notice">
+      MODE DEMONSTRASI. Gunakan data contoh,
+      bukan data pemilih sungguhan.
+    </div>
+
+    <h3>Unggah File Excel</h3>
+    <input
+      type="file"
+      id="excelFile"
+      accept=".xls,.xlsx"
+    >
+
+    <p id="importStatus">
+      Belum ada file dipilih.
+    </p>
+
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>NIK</th>
+            <th>No KK</th>
+            <th>Nama</th>
+            <th>Tempat Lahir</th>
+            <th>Tanggal Lahir</th>
+            <th>Jenis Kelamin</th>
+            <th>Status Perkawinan</th>
+            <th>Alamat</th>
+            <th>RT</th>
+            <th>RW</th>
+            <th>Provinsi</th>
+            <th>Kabupaten</th>
+            <th>Kecamatan</th>
+            <th>Desa/Nagari</th>
+            <th>Kode Pos</th>
+            <th>TPS</th>
+            <th>Status Pemilih</th>
+            <th>Jenis Pemilih</th>
+            <th>Keterangan</th>
+            <th>Tahun Pemilihan</th>
+          </tr>
+        </thead>
+        <tbody id="excelPreview">
+          <tr>
+            <td colspan="20">
+              Pratinjau Excel akan muncul di sini.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p id="excelSummary">Belum ada data.</p>
+
+    <button type="button" id="importButton"
+      disabled>
+      Impor Data Pemilih
+    </button>
+  </div>
+</section>
 </main>
 
 <footer>
@@ -223,6 +292,139 @@ keys.forEach(k=>db[k].forEach(o=>lines.push(k+',"'+Object.values(o).join(' - ').
 let blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
 let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='laporan-sidadi-demo.csv';a.click();URL.revokeObjectURL(a.href);
 }
+
+(function(){
+  const kolom = [
+    'NIK','No KK','Nama','Tempat Lahir',
+    'Tanggal Lahir','Jenis Kelamin',
+    'Status Perkawinan','Alamat','RT','RW',
+    'Provinsi','Kabupaten','Kecamatan',
+    'Desa/Nagari','Kode Pos','TPS',
+    'Status Pemilih','Jenis Pemilih',
+    'Keterangan','Tahun Pemilihan'
+  ];
+
+  const file = document.getElementById('excelFile');
+  const preview = document.getElementById('excelPreview');
+  const status = document.getElementById('importStatus');
+  const summary = document.getElementById('excelSummary');
+  const tombol = document.getElementById('importButton');
+
+  let dataSiap = [];
+
+  file.addEventListener('change', async function(){
+    tombol.disabled = true;
+    dataSiap = [];
+
+    try {
+      const f = file.files[0];
+      if(!f) return;
+
+      const buffer = await f.arrayBuffer();
+      const wb = XLSX.read(buffer,{type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(
+        sheet,{header:1,defval:'',raw:false}
+      );
+
+      if(!rows.length) throw Error('File Excel kosong.');
+
+      const header = rows[0].map(v =>
+        String(v).trim().toLowerCase()
+      );
+
+      if(!header.includes('nik') ||
+         !header.includes('nama')) {
+        throw Error('Baris pertama harus berisi judul kolom NIK dan Nama.');
+      }
+
+      dataSiap = rows.slice(1)
+        .filter(r => r.some(v => String(v).trim()))
+        .map(r => {
+          const o = {};
+          kolom.forEach((k,i) => {
+            o[k] = String(r[i] ?? '').trim();
+          });
+          return o;
+        });
+
+      if(dataSiap.some(o => !o.NIK || !o.Nama)) {
+        throw Error('Ada baris yang NIK atau Namanya kosong.');
+      }
+
+      const n = new Set(dataSiap.map(o => o.NIK));
+      if(n.size !== dataSiap.length) {
+        throw Error('Ada NIK ganda dalam file Excel.');
+      }
+
+      preview.innerHTML = dataSiap.slice(0,20).map(o =>
+        '<tr>' + kolom.map(k =>
+          '<td>' + esc(o[k]) + '</td>'
+        ).join('') + '</tr>'
+      ).join('');
+
+      summary.textContent =
+        'Total data siap diperiksa: ' + dataSiap.length;
+
+      status.textContent =
+        'File berhasil dibaca. Periksa pratinjau sebelum impor.';
+
+      tombol.disabled = dataSiap.length === 0;
+
+    } catch(e) {
+      dataSiap = [];
+      status.textContent = 'Gagal membaca: ' + e.message;
+      summary.textContent = 'Belum ada data valid.';
+      preview.innerHTML =
+        '<tr><td colspan="20">Periksa file Excel.</td></tr>';
+    }
+  });
+
+  tombol.addEventListener('click',function(){
+    if(!dataSiap.length) return;
+
+    const lama = new Set(
+      db.pemilih.map(o => String(o.nik || ''))
+    );
+
+    const baru = dataSiap.filter(o => !lama.has(o.NIK));
+
+    baru.forEach(o => {
+      db.pemilih.push({
+        nik:o.NIK,
+        no_kk:o['No KK'],
+        nama:o.Nama,
+        tempat_lahir:o['Tempat Lahir'],
+        tanggal_lahir:o['Tanggal Lahir'],
+        jenis_kelamin:o['Jenis Kelamin'],
+        status_perkawinan:o['Status Perkawinan'],
+        alamat:o.Alamat,
+        rt:o.RT,
+        rw:o.RW,
+        provinsi:o.Provinsi,
+        kabupaten:o.Kabupaten,
+        kecamatan:o.Kecamatan,
+        desa:o['Desa/Nagari'],
+        kode_pos:o['Kode Pos'],
+        tps:o.TPS,
+        status:o['Status Pemilih'],
+        jenis_pemilih:o['Jenis Pemilih'],
+        keterangan:o.Keterangan,
+        tahun_pemilihan:o['Tahun Pemilihan']
+      });
+    });
+
+    save('pemilih');
+
+    status.textContent =
+      baru.length + ' data berhasil dimasukkan. ' +
+      (dataSiap.length-baru.length) + ' NIK sudah ada.';
+
+    dataSiap = [];
+    tombol.disabled = true;
+    file.value = '';
+  });
+})();
 render();
 </script>
 </body>
